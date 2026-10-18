@@ -1,0 +1,18 @@
+﻿.venv/
+__pycache__/
+*.py[cod]
+db.sqlite3
+db_backup*.sqlite3
+.env
+.env.*
+!.env.example
+staticfiles/
+media/
+
+backups/
+
+# Local settings backups
+config/settings_before_hosting.py
+# Local backup and temporary files
+*.pycode
+*_backup_*.html

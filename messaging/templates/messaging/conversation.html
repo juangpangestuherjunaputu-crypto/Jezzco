@@ -1,0 +1,293 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percakapan | Jezzco</title>
+    <link rel="stylesheet" href="{% static 'css/jezzco.css' %}?v=20261017">
+
+    <style>
+        .dm-page {
+            min-height: 100vh;
+            overflow: visible;
+        }
+
+        .dm-container {
+            width: min(950px, 90%);
+            margin: 35px auto 70px;
+        }
+
+        .dm-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            color: var(--muted);
+            transition: color .2s;
+        }
+
+        .dm-back:hover {
+            color: var(--orange-light);
+        }
+
+        .dm-conversation-header {
+            padding: 26px;
+            margin-bottom: 20px;
+            background:
+                radial-gradient(circle at 100% 0%,
+                rgba(255,61,0,.18), transparent 48%),
+                var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+        }
+
+        .dm-conversation-header h1 {
+            margin: 0 0 8px;
+            font-size: clamp(25px, 4vw, 34px);
+            overflow-wrap: anywhere;
+        }
+
+        .dm-conversation-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .dm-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 20px;
+            margin-bottom: 22px;
+            background: rgba(23,23,23,.65);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+
+            /* Jangan mengunci scroll halaman atau daftar pesan. */
+            min-height: 160px;
+            overflow: visible;
+        }
+
+        .dm-message {
+            width: fit-content;
+            max-width: min(82%, 680px);
+            padding: 15px 18px;
+            background: #242424;
+            border: 1px solid #383838;
+            border-radius: 15px 15px 15px 4px;
+            overflow-wrap: anywhere;
+        }
+
+        .dm-message.mine {
+            align-self: flex-end;
+            background: linear-gradient(135deg,
+                rgba(255,90,31,.17), rgba(201,31,22,.12));
+            border-color: rgba(255,90,31,.35);
+            border-radius: 15px 15px 4px 15px;
+        }
+
+        .dm-message-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .dm-message-meta strong {
+            color: var(--orange-light);
+            font-size: 13px;
+        }
+
+        .dm-message-meta small {
+            color: #858585;
+            font-size: 11px;
+        }
+
+        .dm-message-body {
+            margin: 0;
+            color: #ededed;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .dm-empty {
+            padding: 35px 15px;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        .dm-compose {
+            padding: 24px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+        }
+
+        .dm-compose h2 {
+            margin: 0 0 7px;
+            font-size: 19px;
+        }
+
+        .dm-compose > p {
+            margin: 0 0 20px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .dm-compose label {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .dm-compose textarea {
+            display: block;
+            width: 100%;
+            min-height: 125px;
+            padding: 15px;
+            color: var(--white);
+            background: #111;
+            border: 1px solid #393939;
+            border-radius: 11px;
+            outline: none;
+            resize: vertical;
+            line-height: 1.7;
+        }
+
+        .dm-compose textarea:focus {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(255,61,0,.12);
+        }
+
+        .dm-compose textarea::placeholder {
+            color: #707070;
+        }
+
+        .dm-error {
+            margin-top: 10px;
+            color: #ff8075;
+            font-size: 13px;
+        }
+
+        .dm-compose-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .dm-container {
+                width: 92%;
+                margin-top: 22px;
+            }
+
+            .dm-conversation-header,
+            .dm-compose {
+                padding: 19px;
+            }
+
+            .dm-messages {
+                padding: 13px;
+            }
+
+            .dm-message {
+                max-width: 94%;
+                padding: 12px 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="jezzco-page dm-page">
+
+    <header class="jezzco-header">
+        <a href="/" class="jezzco-logo">JEZZCO<span>.</span></a>
+
+        <nav class="jezzco-nav">
+            <a href="/">Beranda</a>
+            <a href="{% url 'project_list' %}">Temukan</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}">Profil Saya</a>
+            {% else %}
+                <a href="{% url 'login' %}">Masuk</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="dm-container">
+
+        <a href="{% url 'messaging:inbox' %}" class="dm-back">
+            <span aria-hidden="true">←</span>
+            <span>Kembali ke Pesan</span>
+        </a>
+
+        <section class="dm-conversation-header">
+            <span class="jezzco-auth-badge">PESAN PRIBADI</span>
+            <h1>Percakapan <span class="jezzco-gradient-text">#{{ conversation.pk }}</span></h1>
+            <p>Diskusikan ide dan bangun kolaborasi bersama pengguna Jezzco.</p>
+        </section>
+
+        <section class="dm-messages" aria-label="Riwayat pesan">
+            {% for message in messages %}
+                <article class="dm-message {% if message.sender_id == request.user.id %}mine{% endif %}">
+                    <div class="dm-message-meta">
+                        <strong>
+                            {% if message.sender_id == request.user.id %}
+                                Kamu
+                            {% else %}
+                                {{ message.sender.username }}
+                            {% endif %}
+                        </strong>
+                        <small>{{ message.created_at|date:"d M Y, H:i" }}</small>
+                    </div>
+
+                    <p class="dm-message-body">{{ message.body }}</p>
+                </article>
+            {% empty %}
+                <div class="dm-empty">
+                    <strong>Mulai percakapanmu.</strong><br>
+                    Pesan yang kamu kirim akan muncul di sini.
+                </div>
+            {% endfor %}
+        </section>
+
+        <section class="dm-compose">
+            <h2>Kirim Pesan</h2>
+            <p>Sampaikan pertanyaan atau ide dengan jelas dan sopan.</p>
+
+            <form method="post"
+                  action="{% url 'messaging:send_message' conversation.pk %}">
+                {% csrf_token %}
+
+                <label for="{{ form.body.id_for_label }}">Isi pesan</label>
+
+                {{ form.body }}
+
+                {% if form.body.errors %}
+                    <div class="dm-error">{{ form.body.errors }}</div>
+                {% endif %}
+
+                <div class="dm-compose-actions">
+                    <button type="submit" class="jezzco-button jezzco-button-primary">
+                        Kirim Pesan &nbsp; →
+                    </button>
+                </div>
+            </form>
+        </section>
+
+    </main>
+
+    <footer class="jezzco-footer">
+        &copy; {% now "Y" %} Jezzco. Temukan. Diskusikan. Wujudkan. Kembangkan.
+    </footer>
+
+</div>
+</body>
+</html>

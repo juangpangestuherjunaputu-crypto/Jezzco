@@ -1,0 +1,241 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesan | Jezzco</title>
+    <link rel="stylesheet" href="{% static 'css/jezzco.css' %}?v=20261017">
+
+    <style>
+        .dm-page {
+            min-height: 100vh;
+            overflow: visible;
+        }
+
+        .dm-container {
+            width: min(1000px, 90%);
+            margin: 40px auto 70px;
+        }
+
+        .dm-heading {
+            margin-bottom: 30px;
+        }
+
+        .dm-heading h1 {
+            margin: 0 0 10px;
+            font-size: clamp(30px, 4vw, 42px);
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .dm-heading p {
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .dm-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .dm-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 22px;
+            background: linear-gradient(135deg, #1c1c1c, #171717);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: border-color .2s, transform .2s, background .2s;
+            overflow-wrap: anywhere;
+        }
+
+        .dm-card:hover {
+            border-color: var(--orange);
+            background: #202020;
+            transform: translateY(-2px);
+        }
+
+        .dm-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 52px;
+            height: 52px;
+            border-radius: 15px;
+            background: var(--gradient);
+            color: white;
+            font-size: 21px;
+            font-weight: 900;
+        }
+
+        .dm-card-content {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .dm-card-title {
+            margin: 0 0 5px;
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .dm-preview {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .dm-arrow {
+            flex-shrink: 0;
+            color: var(--orange-light);
+            font-size: 24px;
+        }
+
+        .dm-empty {
+            padding: 45px 24px;
+            text-align: center;
+            background: var(--surface);
+            border: 1px dashed #444;
+            border-radius: 18px;
+        }
+
+        .dm-empty-icon {
+            margin-bottom: 14px;
+            color: var(--orange-light);
+            font-size: 38px;
+        }
+
+        .dm-empty h2 {
+            margin: 0 0 10px;
+            font-size: 21px;
+        }
+
+        .dm-empty p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        .dm-footer-link {
+            margin-top: 28px;
+        }
+
+        .dm-footer-link a {
+            color: var(--orange-light);
+        }
+
+        @media (max-width: 600px) {
+            .dm-container {
+                width: 92%;
+                margin-top: 25px;
+            }
+
+            .dm-card {
+                padding: 16px;
+                gap: 12px;
+            }
+
+            .dm-avatar {
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="jezzco-page dm-page">
+
+    <header class="jezzco-header">
+        <a href="/" class="jezzco-logo">JEZZCO<span>.</span></a>
+
+        <nav class="jezzco-nav">
+            <a href="/">Beranda</a>
+            <a href="{% url 'project_list' %}">Temukan</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}">Profil Saya</a>
+            {% else %}
+                <a href="{% url 'login' %}">Masuk</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="dm-container">
+
+        <section class="dm-heading">
+            <span class="jezzco-auth-badge">KOMUNIKASI JEZZCO</span>
+            <h1>Pesan <span class="jezzco-gradient-text">Pribadi.</span></h1>
+            <p>Tempat berdiskusi, bertukar ide, dan membangun kolaborasi.</p>
+        </section>
+
+        <div style="margin-bottom:24px;">
+    <a href="{% url 'messaging:user_list' %}" class="jezzco-button jezzco-button-primary">
+        + Mulai Percakapan
+    </a>
+</div>
+
+<section class="dm-list">
+            {% for conversation in conversations %}
+                <a class="dm-card"
+                   href="{% url 'messaging:conversation' conversation.pk %}">
+
+                    <div class="dm-avatar">J</div>
+
+                    <div class="dm-card-content">
+                        <h2 class="dm-card-title">
+                            Percakapan #{{ conversation.pk }}
+                        </h2>
+
+                        <p class="dm-preview">
+                            {% with last=conversation.messages.last %}
+                                {% if last %}
+                                    <strong>{{ last.sender.username }}:</strong>
+                                    {{ last.body|truncatechars:100 }}
+                                {% else %}
+                                    Belum ada pesan. Mulai diskusi sekarang.
+                                {% endif %}
+                            {% endwith %}
+                        </p>
+                    </div>
+
+                    <span class="dm-arrow" aria-hidden="true">›</span>
+                </a>
+            {% empty %}
+                <div class="dm-empty">
+                    <div class="dm-empty-icon" aria-hidden="true">✉</div>
+                    <h2>Belum Ada Percakapan</h2>
+                    <p>
+                        Kotak pesanmu masih kosong.<br>
+                        Jelajahi proyek dan temukan orang yang ingin kamu ajak berdiskusi.
+                    </p>
+
+                    <a href="{% url 'project_list' %}"
+                       class="jezzco-button jezzco-button-primary"
+                       style="margin-top:22px;">
+                        Jelajahi Proyek
+                    </a>
+                </div>
+            {% endfor %}
+        </section>
+
+        <div class="dm-footer-link">
+            <a href="/">← Kembali ke Beranda</a>
+        </div>
+
+    </main>
+
+    <footer class="jezzco-footer">
+        &copy; {% now "Y" %} Jezzco. Temukan. Diskusikan. Wujudkan. Kembangkan.
+    </footer>
+
+</div>
+</body>
+</html>
+

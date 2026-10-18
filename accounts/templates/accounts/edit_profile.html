@@ -1,0 +1,111 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Profil | Jezzco</title>
+
+    <link rel="stylesheet" href="{% static 'css/jezzco.css' %}?v=20261015">
+</head>
+
+<body class="jezzco-page">
+
+<header class="jezzco-header">
+    <a href="/" class="jezzco-logo">JEZZCO<span>.</span></a>
+
+    <nav class="jezzco-nav">
+        <a href="/">Beranda</a>
+        <a href="{% url 'profile' %}">Profil Saya</a>
+    </nav>
+</header>
+
+<main class="jezzco-container">
+
+    <section class="jezzco-profile-banner">
+        <span class="jezzco-auth-badge">
+            PERSONAL BRANDING
+        </span>
+
+        <h1>
+            Ceritakan potensimu.
+        </h1>
+
+        <p>
+            Perkenalkan dirimu kepada komunitas Jezzco.
+            Tunjukkan minat, keahlian, dan tujuanmu agar
+            peluang kolaborasi lebih mudah ditemukan.
+        </p>
+    </section>
+
+    <section class="jezzco-profile-card">
+
+        <h2>Informasi Profil</h2>
+
+        <p class="jezzco-auth-subtitle">
+            Lengkapi informasi berikut. Kamu bisa mengubahnya lagi nanti.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="jezzco-alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="jezzco-form-field">
+
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <div class="jezzco-help-text">
+                            {{ field.help_text }}
+                        </div>
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <div class="jezzco-error">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+            {% endfor %}
+
+            <div class="jezzco-profile-actions">
+
+                <button
+                    type="submit"
+                    class="jezzco-button jezzco-button-primary"
+                >
+                    Simpan Perubahan
+                </button>
+
+                <a
+                    href="{% url 'profile' %}"
+                    class="jezzco-button jezzco-button-secondary"
+                >
+                    Kembali ke Profil
+                </a>
+
+            </div>
+        </form>
+
+    </section>
+
+</main>
+
+<footer class="jezzco-footer">
+    &copy; {% now "Y" %} Jezzco. Temukan. Diskusikan. Wujudkan. Kembangkan.
+</footer>
+
+</body>
+</html>

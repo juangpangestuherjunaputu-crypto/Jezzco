@@ -1,0 +1,118 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Daftar Akun | Jezzco</title>
+
+    <link rel="stylesheet" href="{% static 'css/jezzco.css' %}?v=20261015">
+</head>
+
+<body class="jezzco-page">
+
+<header class="jezzco-header">
+    <a href="/" class="jezzco-logo">JEZZCO<span>.</span></a>
+
+    <nav class="jezzco-nav">
+        <a href="/">Beranda</a>
+        <a href="{% url 'login' %}">Login</a>
+    </nav>
+</header>
+
+<main class="jezzco-auth-layout">
+
+    <section class="jezzco-auth-brand">
+        <span class="jezzco-auth-badge">
+            TEMUKAN PELUANG BARU
+        </span>
+
+        <h1>
+            Ide besar dimulai dari
+            <span class="jezzco-gradient-text">satu langkah.</span>
+        </h1>
+
+        <p class="jezzco-auth-description">
+            Bergabunglah dengan Jezzco untuk menemukan ide,
+            mengenal orang dengan visi yang sejalan, membangun
+            proyek, dan mewujudkan peluang bersama.
+        </p>
+
+        <p class="jezzco-auth-slogan">
+            Jezzco temukan, diskusikan, wujudkan dan kembangkan ide anda.
+        </p>
+    </section>
+
+    <section class="jezzco-auth-card">
+
+        <h2>Buat akun Jezzco</h2>
+
+        <p class="jezzco-auth-subtitle">
+            Mulai perjalananmu hari ini.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="jezzco-alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="jezzco-form-field">
+
+                    <label for="{{ field.id_for_label }}">
+                        {% if field.name == "username" %}
+                            Username
+                        {% elif field.name == "password1" %}
+                            Kata sandi
+                        {% elif field.name == "password2" %}
+                            Konfirmasi kata sandi
+                        {% else %}
+                            {{ field.label }}
+                        {% endif %}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <div class="jezzco-help-text">
+                            {{ field.help_text|safe }}
+                        </div>
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <div class="jezzco-error">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+            {% endfor %}
+
+            <button
+                type="submit"
+                class="jezzco-button jezzco-button-primary jezzco-form-submit"
+            >
+                Buat Akun Jezzco
+            </button>
+        </form>
+
+        <div class="jezzco-auth-footer">
+            Sudah punya akun?
+            <a href="{% url 'login' %}">Masuk di sini</a>
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="jezzco-footer">
+    &copy; {% now "Y" %} Jezzco. Temukan. Diskusikan. Wujudkan. Kembangkan.
+</footer>
+
+</body>
+</html>

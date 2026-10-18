@@ -1,0 +1,245 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Temukan Proyek | Jezzco</title>
+
+    <link rel="stylesheet" href="{% static 'css/jezzco.css' %}?v=20261015">
+
+    <style>
+        .project-search {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .project-search input,
+        .project-search select {
+            width: 100%;
+            min-width: 0;
+            padding: 13px;
+            color: #fff;
+            background: #111;
+            border: 1px solid #393939;
+            border-radius: 9px;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+            margin-top: 30px;
+        }
+
+        .project-card {
+            padding: 24px;
+            background: #1C1C1C;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .project-card:hover {
+            border-color: #FF3D00;
+            transform: translateY(-3px);
+        }
+
+        .project-card h2 {
+            margin: 12px 0;
+            font-size: 22px;
+        }
+
+        .project-card p {
+            color: #B6B6B6;
+            overflow-wrap: anywhere;
+        }
+
+        .project-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .project-tag {
+            display: inline-block;
+            padding: 5px 10px;
+            color: #FF8A65;
+            background: rgba(255, 61, 0, 0.1);
+            border: 1px solid rgba(255, 61, 0, 0.25);
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .project-empty {
+            margin-top: 30px;
+            padding: 35px;
+            background: #171717;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .project-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 750px) {
+            .project-search {
+                grid-template-columns: 1fr;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="jezzco-page">
+
+<header class="jezzco-header">
+    <a href="/" class="jezzco-logo">JEZZCO<span>.</span></a>
+
+    <nav class="jezzco-nav">
+        <a href="/">Beranda</a>
+        <a href="{% url 'project_list' %}">Temukan</a>
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}">Profil Saya</a>
+        {% else %}
+            <a href="{% url 'login' %}">Masuk</a>
+        {% endif %}
+    </nav>
+</header>
+
+<main class="jezzco-container">
+
+    <section class="jezzco-profile-banner">
+        <span class="jezzco-auth-badge">DISCOVER PROJECTS</span>
+
+        <h1>Temukan Proyek</h1>
+
+        <p>
+            Temukan ide, proyek, dan peluang kolaborasi.
+            Siapa tahu, proyek berikutnya dimulai dari sini.
+        </p>
+
+        {% if user.is_authenticated %}
+            <div class="project-actions">
+                <a href="{% url 'project_create' %}"
+                   class="jezzco-button jezzco-button-primary">
+                    + Buat Proyek
+                </a>
+            </div>
+        {% else %}
+            <div class="project-actions">
+                <a href="{% url 'login' %}"
+                   class="jezzco-button jezzco-button-primary">
+                    Masuk untuk Membuat Proyek
+                </a>
+            </div>
+        {% endif %}
+    </section>
+
+    <form method="get" class="project-search">
+        <input
+            type="search"
+            name="q"
+            value="{{ query }}"
+            placeholder="Cari judul, deskripsi, atau kebutuhan proyek..."
+        >
+
+        <select name="category">
+            <option value="">Semua kategori</option>
+            {% for value, label in categories %}
+                <option value="{{ value }}"
+                    {% if selected_category == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="status">
+            <option value="">Semua tahap</option>
+            {% for value, label in statuses %}
+                <option value="{{ value }}"
+                    {% if selected_status == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit"
+                class="jezzco-button jezzco-button-primary">
+            Cari
+        </button>
+    </form>
+
+    {% if projects %}
+        <section class="project-grid">
+            {% for project in projects %}
+                <article class="project-card">
+                    <div class="project-meta">
+                        <span class="project-tag">
+                            {{ project.get_category_display }}
+                        </span>
+
+                        <span class="project-tag">
+                            {{ project.get_status_display }}
+                        </span>
+                    </div>
+
+                    <h2>
+                        <a href="{% url 'project_detail' slug=project.slug %}">
+                            {{ project.title }}
+                        </a>
+                    </h2>
+
+                    <p>{{ project.description|truncatewords:35 }}</p>
+
+                    {% if project.collaboration_needs %}
+                        <p>
+                            <strong>Kebutuhan kolaborasi:</strong>
+                            {{ project.collaboration_needs|truncatewords:20 }}
+                        </p>
+                    {% endif %}
+
+                    <p>
+                        <small>
+                            Pemilik: {{ project.owner.username }}
+                        </small>
+                    </p>
+
+                    <a href="{% url 'project_detail' slug=project.slug %}"
+                       class="jezzco-button jezzco-button-secondary">
+                        Lihat Detail
+                    </a>
+                </article>
+            {% endfor %}
+        </section>
+    {% else %}
+        <section class="project-empty">
+            <h2>Belum Ada Proyek yang Cocok</h2>
+            <p>
+                Coba ubah kata kunci atau filter pencarianmu.
+                Kamu juga bisa menjadi orang pertama yang membagikan proyek.
+            </p>
+        </section>
+    {% endif %}
+
+</main>
+
+<footer class="jezzco-footer">
+    &copy; {% now "Y" %} Jezzco. Temukan. Diskusikan. Wujudkan. Kembangkan.
+</footer>
+
+</body>
+</html>

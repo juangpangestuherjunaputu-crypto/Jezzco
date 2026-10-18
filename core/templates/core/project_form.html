@@ -1,0 +1,116 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ page_title }} | Jezzco</title>
+
+    <link rel="stylesheet" href="{% static 'css/jezzco.css' %}?v=20261015">
+</head>
+
+<body class="jezzco-page">
+
+<header class="jezzco-header">
+    <a href="/" class="jezzco-logo">JEZZCO<span>.</span></a>
+
+    <nav class="jezzco-nav">
+        <a href="/">Beranda</a>
+        <a href="{% url 'project_list' %}">Temukan</a>
+        <a href="{% url 'profile' %}">Profil Saya</a>
+    </nav>
+</header>
+
+<main class="jezzco-container">
+
+    <section class="jezzco-profile-banner">
+        <span class="jezzco-auth-badge">JEZZCO PROJECTS</span>
+
+        <h1>{{ page_title }}</h1>
+
+        <p>
+            Bagikan ide, jelaskan tujuan proyekmu, dan temukan
+            orang yang memiliki keahlian atau visi yang sejalan.
+        </p>
+    </section>
+
+    <section class="jezzco-profile-card">
+
+        <h2>Informasi Proyek</h2>
+
+        <p class="jezzco-auth-subtitle">
+            Isi informasi proyek dengan jelas agar orang lain
+            memahami apa yang ingin kamu wujudkan.
+        </p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="jezzco-alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="jezzco-alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="jezzco-form-field">
+
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <div class="jezzco-help-text">
+                            {{ field.help_text }}
+                        </div>
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <div class="jezzco-error">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+            {% endfor %}
+
+            <div class="jezzco-profile-actions">
+
+                <button
+                    type="submit"
+                    class="jezzco-button jezzco-button-primary"
+                >
+                    {{ submit_label }}
+                </button>
+
+                <a
+                    href="{% url 'project_list' %}"
+                    class="jezzco-button jezzco-button-secondary"
+                >
+                    Batal
+                </a>
+
+            </div>
+        </form>
+
+    </section>
+
+</main>
+
+<footer class="jezzco-footer">
+    &copy; {% now "Y" %} Jezzco. Temukan. Diskusikan. Wujudkan. Kembangkan.
+</footer>
+
+</body>
+</html>

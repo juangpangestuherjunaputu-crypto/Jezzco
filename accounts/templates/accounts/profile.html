@@ -1,0 +1,163 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Profil Saya | Jezzco</title>
+
+    <link rel="stylesheet" href="{% static 'css/jezzco.css' %}?v=20261015">
+</head>
+
+<body class="jezzco-page">
+
+<header class="jezzco-header">
+    <a href="/" class="jezzco-logo">JEZZCO<span>.</span></a>
+
+    <nav class="jezzco-nav">
+        <a href="/">Beranda</a>
+        <a href="{% url 'edit_profile' %}">Edit Profil</a>
+    </nav>
+</header>
+
+<main class="jezzco-container">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="jezzco-alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <section class="jezzco-profile-banner">
+
+        <span class="jezzco-auth-badge">
+            PROFIL JEZZCO
+        </span>
+
+        <h1>
+            {{ profile.full_name|default:request.user.username }}
+        </h1>
+
+        <p>
+            {{ profile.headline|default:"Mulai bangun personal branding-mu di Jezzco." }}
+        </p>
+
+        {% if profile.about %}
+            <p>{{ profile.about }}</p>
+        {% else %}
+            <p>
+                Lengkapi profilmu agar orang lain dapat mengenali
+                minat, keahlian, dan potensimu.
+            </p>
+        {% endif %}
+
+        <div class="jezzco-profile-actions">
+            <a
+                href="{% url 'edit_profile' %}"
+                class="jezzco-button jezzco-button-primary"
+            >
+                Edit Profil
+            </a>
+        </div>
+
+    </section>
+
+    <section class="jezzco-profile-card">
+
+        <h2>Informasi Personal</h2>
+
+        <div class="jezzco-profile-item">
+            <div class="jezzco-profile-label">Username</div>
+            <div class="jezzco-profile-value">
+                {{ request.user.username }}
+            </div>
+        </div>
+
+        <div class="jezzco-profile-item">
+            <div class="jezzco-profile-label">Nama lengkap</div>
+            <div class="jezzco-profile-value">
+                {{ profile.full_name|default:"Belum diisi" }}
+            </div>
+        </div>
+
+        <div class="jezzco-profile-item">
+            <div class="jezzco-profile-label">Tentang saya</div>
+            <div class="jezzco-profile-value">
+                {{ profile.about|default:"Belum diisi" }}
+            </div>
+        </div>
+
+        <div class="jezzco-profile-item">
+            <div class="jezzco-profile-label">Minat</div>
+            <div class="jezzco-profile-value">
+                {{ profile.interests|default:"Belum diisi" }}
+            </div>
+        </div>
+
+        <div class="jezzco-profile-item">
+            <div class="jezzco-profile-label">Keahlian</div>
+            <div class="jezzco-profile-value">
+                {{ profile.skills|default:"Belum diisi" }}
+            </div>
+        </div>
+
+        <div class="jezzco-profile-item">
+            <div class="jezzco-profile-label">Pendidikan</div>
+            <div class="jezzco-profile-value">
+                {{ profile.education|default:"Belum diisi" }}
+            </div>
+        </div>
+
+        <div class="jezzco-profile-item">
+            <div class="jezzco-profile-label">Tujuan bergabung</div>
+            <div class="jezzco-profile-value">
+                {{ profile.get_goal_display|default:"Belum dipilih" }}
+            </div>
+        </div>
+
+        <div class="jezzco-profile-actions">
+
+            <a
+                href="{% url 'edit_profile' %}"
+                class="jezzco-button jezzco-button-primary"
+            >
+                Perbarui Profil
+            </a>
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="jezzco-button jezzco-button-secondary"
+                >
+                    Keluar
+                </button>
+            </form>
+
+        </div>
+
+    </section>
+
+    <section class="jezzco-profile-card">
+
+        <h2>Proyek Saya</h2>
+
+        <p class="jezzco-profile-value">
+            Area proyek akan tersedia setelah kita membangun
+            sistem proyek Jezzco.
+        </p>
+
+    </section>
+
+</main>
+
+<footer class="jezzco-footer">
+    &copy; {% now "Y" %} Jezzco. Temukan. Diskusikan. Wujudkan. Kembangkan.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Jezzco</title>
+
+    <link rel="stylesheet" href="{% static 'css/jezzco.css' %}?v=20261015">
+</head>
+
+<body class="jezzco-page">
+
+<header class="jezzco-header">
+    <a href="/" class="jezzco-logo">JEZZCO<span>.</span></a>
+
+    <nav class="jezzco-nav">
+        <a href="/">Beranda</a>
+        <a href="{% url 'register' %}">Daftar</a>
+    </nav>
+</header>
+
+<main class="jezzco-auth-layout">
+
+    <section class="jezzco-auth-brand">
+        <span class="jezzco-auth-badge">
+            SENANG MELIHATMU KEMBALI
+        </span>
+
+        <h1>
+            Perjalanan besarmu
+            <span class="jezzco-gradient-text">berlanjut di sini.</span>
+        </h1>
+
+        <p class="jezzco-auth-description">
+            Masuk kembali ke Jezzco untuk menemukan inspirasi,
+            melanjutkan proyek, berdiskusi, dan membuka peluang
+            kolaborasi baru.
+        </p>
+
+        <p class="jezzco-auth-slogan">
+            Jezzco temukan, diskusikan, wujudkan dan kembangkan ide anda.
+        </p>
+    </section>
+
+    <section class="jezzco-auth-card">
+
+        <h2>Selamat datang kembali.</h2>
+
+        <p class="jezzco-auth-subtitle">
+            Masukkan informasi akunmu untuk melanjutkan.
+        </p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="jezzco-alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if form.non_field_errors %}
+            <div class="jezzco-alert">
+                Username atau kata sandi tidak valid.
+                Periksa kembali informasi akunmu.
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="jezzco-form-field">
+                <label for="{{ form.username.id_for_label }}">
+                    Username
+                </label>
+
+                {{ form.username }}
+
+                {% if form.username.errors %}
+                    <div class="jezzco-error">
+                        {{ form.username.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="jezzco-form-field">
+                <label for="{{ form.password.id_for_label }}">
+                    Kata sandi
+                </label>
+
+                {{ form.password }}
+
+                {% if form.password.errors %}
+                    <div class="jezzco-error">
+                        {{ form.password.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <button
+                type="submit"
+                class="jezzco-button jezzco-button-primary jezzco-form-submit"
+            >
+                Masuk ke Jezzco
+            </button>
+        </form>
+
+        <div class="jezzco-auth-footer">
+            Belum punya akun?
+            <a href="{% url 'register' %}">Bergabung sekarang</a>
+        </div>
+
+    </section>
+
+</main>
+
+<footer class="jezzco-footer">
+    &copy; {% now "Y" %} Jezzco. Temukan. Diskusikan. Wujudkan. Kembangkan.
+</footer>
+
+</body>
+</html>
